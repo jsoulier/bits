@@ -138,6 +138,7 @@ public:
     MppItemID GetID() const;
     MppItemType GetType() const;
     MppItemActionType GetActionType() const;
+    int GetDamage() const;
     int GetColor1() const;
     int GetColor2() const;
     int GetColor3() const;

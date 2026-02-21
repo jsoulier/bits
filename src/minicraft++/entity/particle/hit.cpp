@@ -1,4 +1,13 @@
 #include <minicraft++/entity/particle/hit.hpp>
+#include <minicraft++/random.hpp>
+
+void MppHitEntity::OnAdd()
+{
+    static constexpr int kOffset = 3;
+    MppParticleEntity::OnAdd();
+    X += MppRandomGetInt(-kOffset, kOffset);
+    Y += MppRandomGetInt(-kOffset, kOffset);
+}
 
 int MppHitEntity::GetSize() const
 {
@@ -12,7 +21,7 @@ int MppHitEntity::GetMaxLifetime() const
 
 int MppHitEntity::GetSpriteX() const
 {
-    return 0;
+    return 1;
 }
 
 int MppHitEntity::GetSpriteY() const

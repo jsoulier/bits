@@ -100,8 +100,8 @@ void MppLevel::Save()
     {
         SaveTileX1 = 0;
         SaveTileY1 = 0;
-        SaveTileX2 = kSize;
-        SaveTileY2 = kSize;
+        SaveTileX2 = kSize - 1;
+        SaveTileY2 = kSize - 1;
     }
     uint32_t tiles = 0;
     uint32_t entities = 0;
@@ -121,8 +121,8 @@ void MppLevel::Save()
     }
     MppLog("Saved %d tiles to level %d", tiles, Level);
     MppLog("Saved %d entities to level %d", entities, Level);
-    SaveTileX1 = kSize;
-    SaveTileY1 = kSize;
+    SaveTileX1 = kSize - 1;
+    SaveTileY1 = kSize - 1;
     SaveTileX2 = -1;
     SaveTileY2 = -1;
 }

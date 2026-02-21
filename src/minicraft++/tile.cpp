@@ -12,6 +12,7 @@
 #include <minicraft++/entity/entity.hpp>
 #include <minicraft++/entity/mob/vehicle.hpp>
 #include <minicraft++/entity/mob/mob.hpp>
+#include <minicraft++/entity/particle/destroyed.hpp>
 #include <minicraft++/entity/particle/hit.hpp>
 #include <minicraft++/entity/particle/particle.hpp>
 #include <minicraft++/inventory.hpp>
@@ -22,10 +23,10 @@
 #include <minicraft++/tile.hpp>
 #include <minicraft++/world.hpp>
 
-static constexpr uint64_t kInvalidTicks = std::numeric_limits<uint64_t>::max();
 static constexpr int kDirtColor = 420;
 
 static const MppAudioHandle kDestroyedAudio{{"destroyed_tile_1", "destroyed_tile_2"}};
+static const MppAudioHandle kHitAudio{{"hit_tile_1"}};
 static const MppAudioHandle kPlacedAudio{{"placed_tile_1"}};
 
 enum TileSpriteType
@@ -55,6 +56,7 @@ struct
     int PhysicsHeight;
     MppTileID ChildTile;
     MppItemType ItemType;
+    int MaxHealth;
 }
 static constexpr kTiles[MppTileIDCount] =
 {
@@ -76,6 +78,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
     {
         .Name = "grass",
@@ -95,6 +98,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDDirt,
         .ItemType = MppItemTypeShovel | MppItemTypeHoe,
+        .MaxHealth = 100,
     },
     {
         .Name = "dirt",
@@ -113,6 +117,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
     {
         .Name = "stone_wall",
@@ -132,6 +137,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypePickaxe | MppItemTypeHands,
+        .MaxHealth = 100,
     },
     {
         .Name = "tree",
@@ -151,6 +157,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeAxe | MppItemTypeHands,
+        .MaxHealth = 100,
     },
     {
         .Name = "sand",
@@ -170,6 +177,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDDirt,
         .ItemType = MppItemTypeShovel,
+        .MaxHealth = 100,
     },
     {
         .Name = "stairs_down",
@@ -189,6 +197,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = 2,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
     {
         .Name = "stairs_up",
@@ -208,6 +217,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = 2,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
     {
         .Name = "stone",
@@ -227,6 +237,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
     {
         .Name = "iron_rails",
@@ -246,6 +257,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeEquipment,
+        .MaxHealth = 100,
     },
     {
         .Name = "water",
@@ -265,6 +277,7 @@ static constexpr kTiles[MppTileIDCount] =
         .PhysicsHeight = MppTile::kSize,
         .ChildTile = MppTileIDInvalid,
         .ItemType = MppItemTypeNone,
+        .MaxHealth = 100,
     },
 };
 
@@ -381,26 +394,26 @@ static int GetSprite1x2_2x1(MppTileID lhs, int x, int y, MppTileLayer layer)
 
 MppTile::MppTile()
     : Layers{MppTileIDInvalid, MppTileIDInvalid}
-    , Ticks{kInvalidTicks}
+    , Health{0}
 {
 }
 
 MppTile::MppTile(MppTileID bottomID)
     : Layers{bottomID, MppTileIDInvalid}
-    , Ticks{kInvalidTicks}
+    , Health{kTiles[bottomID].MaxHealth}
 {
 }
 
 MppTile::MppTile(MppTileID bottomID, MppTileID topID)
     : Layers{bottomID, topID}
-    , Ticks{kInvalidTicks}
+    , Health{kTiles[topID].MaxHealth}
 {
 }
 
 void MppTile::Visit(SavepointVisitor& visitor)
 {
     visitor(Layers);
-    visitor(Ticks);
+    visitor(Health);
 }
 
 void MppTile::Update(int x, int y, uint64_t ticks)
@@ -571,14 +584,26 @@ bool MppTile::OnAction(std::shared_ptr<MppEntity>& instigator, int x, int y)
     MppAssert(item.IsValid());
     if (item.GetType() & MppItemTypeEquipment)
     {
+        std::shared_ptr<MppEntity> entity;
         MppTileID& id = GetMutableID();
         if ((item.GetType() & kTiles[id].ItemType) == MppItemTypeNone)
         {
             return false;
         }
-        id = kTiles[id].ChildTile;
-        kDestroyedAudio.Play();
-        std::shared_ptr<MppEntity> entity = MppEntity::Create<MppHitEntity>();
+        Health -= item.GetDamage();
+        if (Health > 0)
+        {
+            entity = MppEntity::Create<MppHitEntity>();
+            kHitAudio.Play();
+        }
+        else
+        {
+            entity = MppEntity::Create<MppDestroyedEntity>();
+            id = kTiles[id].ChildTile;
+            Health = kTiles[id].MaxHealth;
+            kDestroyedAudio.Play();
+        }
+        MppAssert(entity);
         entity->SetX(x * kSize);
         entity->SetY(y * kSize);
         MppWorldAddEntity(entity);

@@ -8,6 +8,7 @@ class MppParticleEntity;
 using MppParticleEntityEmitterFunction = std::shared_ptr<MppParticleEntity>(*)();
 
 std::shared_ptr<MppParticleEntity> MppParticleEntityEmitterCreateHit();
+std::shared_ptr<MppParticleEntity> MppParticleEntityEmitterCreateDestroyed();
 
 class MppParticleEntityEmitter
 {

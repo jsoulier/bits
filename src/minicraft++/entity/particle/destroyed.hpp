@@ -4,12 +4,11 @@
 
 #include <minicraft++/entity/particle/particle.hpp>
 
-class MppHitEntity : public MppParticleEntity
+class MppDestroyedEntity : public MppParticleEntity
 {
-    SAVEPOINT_POLY(MppHitEntity)
+    SAVEPOINT_POLY(MppDestroyedEntity)
     
 public:
-    void OnAdd() override;
     int GetSize() const override;
 
 protected:

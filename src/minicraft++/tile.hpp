@@ -73,7 +73,7 @@ private:
     MppTileID& GetMutableID();
 
     std::array<MppTileID, MppTileLayerCount> Layers;
-    uint64_t Ticks;
+    int Health;
 };
 
 static MppTile kMppTileInvalid{};

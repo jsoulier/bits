@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <minicraft++/assert.hpp>
+#include <minicraft++/entity/particle/destroyed.hpp>
 #include <minicraft++/entity/particle/emitter.hpp>
 #include <minicraft++/entity/particle/hit.hpp>
 #include <minicraft++/entity/particle/particle.hpp>
@@ -13,6 +14,11 @@
 std::shared_ptr<MppParticleEntity> MppParticleEntityEmitterCreateHit()
 {
     return std::make_shared<MppHitEntity>();
+}
+
+std::shared_ptr<MppParticleEntity> MppParticleEntityEmitterCreateDestroyed()
+{
+    return std::make_shared<MppDestroyedEntity>();
 }
 
 MppParticleEntityEmitter::MppParticleEntityEmitter()

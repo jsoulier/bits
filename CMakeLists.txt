@@ -14,6 +14,7 @@ configure_file(LICENSE.txt ${BINARY_DIR} COPYONLY)
 configure_file(README.md ${BINARY_DIR} COPYONLY)
 configure_file(res/sounds/destroyed_tile_1.wav ${BINARY_DIR} COPYONLY)
 configure_file(res/sounds/destroyed_tile_2.wav ${BINARY_DIR} COPYONLY)
+configure_file(res/sounds/hit_tile_1.wav ${BINARY_DIR} COPYONLY)
 configure_file(res/sounds/placed_tile_1.wav ${BINARY_DIR} COPYONLY)
 configure_file(res/textures/spritesheet.png ${BINARY_DIR} COPYONLY)
 
@@ -54,6 +55,7 @@ add_executable(minicraft++ WIN32
     src/minicraft++/entity/mob/spider.cpp
     src/minicraft++/entity/mob/zombie.cpp
     src/minicraft++/entity/mob/mount.cpp
+    src/minicraft++/entity/particle/destroyed.cpp
     src/minicraft++/entity/particle/emitter.cpp
     src/minicraft++/entity/particle/hit.cpp
     src/minicraft++/entity/particle/particle.cpp
@@ -62,7 +64,6 @@ add_executable(minicraft++ WIN32
     src/minicraft++/input.cpp
     src/minicraft++/inventory.cpp
     src/minicraft++/item.cpp
-    src/minicraft++/level.cpp
     src/minicraft++/level/level.cpp
     src/minicraft++/level/surface.cpp
     src/minicraft++/level/underground.cpp
