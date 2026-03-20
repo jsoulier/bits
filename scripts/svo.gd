@@ -5,8 +5,8 @@
 @export_dir var out_data: String = "res://data/"
 @export var run_build_on_ready: bool = false
 @export var run_build: bool = false:
-	set(v):
-		if v and Engine.is_editor_hint():
+	set(value):
+		if value and Engine.is_editor_hint():
 			run_build = false
 			_run_build()
 
