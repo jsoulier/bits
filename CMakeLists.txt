@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 project(geo_names)
 
 add_library(geo_names src/geo_names.cpp lib/sqlite3/sqlite3.c)
+add_library(geo_names::geo_names ALIAS geo_names)
 target_include_directories(geo_names PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(geo_names PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/sqlite3)
 target_compile_definitions(geo_names PRIVATE SQLITE_ENABLE_FTS5 SQLITE_ENABLE_DESERIALIZE)

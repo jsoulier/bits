@@ -1,4 +1,4 @@
-#include <print>
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     GetGeoNames(results, 8, "ott");
     for (const GeoNames& result : results)
     {
-        std::println("Found \"{}\"", result.Location);
+        std::printf("Found \"%s\" at %f,%f\n", result.Location.c_str(), result.Latitude, result.Longitude);
     }
     return 0;
 }
