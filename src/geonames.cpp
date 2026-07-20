@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "geo_names.hpp"
 #include "geonames.db.h"
+#include "geonames.hpp"
 
 static sqlite3* GetDatabase()
 {

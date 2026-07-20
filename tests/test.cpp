@@ -1,8 +1,6 @@
 #include <cstdio>
-#include <string>
-#include <vector>
 
-#include "geo_names.hpp"
+#include "geonames.hpp"
 
 int main(int argc, char** argv)
 {
