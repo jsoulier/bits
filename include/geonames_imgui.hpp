@@ -7,16 +7,16 @@
 
 #include "geonames.hpp"
 
-inline std::optional<GeoNames> GetImGuiGeoNames(int maxResults = 8)
+inline std::optional<GeoNames> GeoNamesImGui(int maxResults = 8)
 {
-    static char fuzzy[256];
+    static char pattern[256];
     static std::vector<GeoNames> results;
     std::optional<GeoNames> result;
     static int index = -1;
     ImGui::SetNextItemWidth(-1);
-    if (ImGui::InputTextWithHint("##ImGuiGeoNames", "Location...", fuzzy, sizeof(fuzzy)))
+    if (ImGui::InputTextWithHint("##ImGuiGeoNames", "Location...", pattern, sizeof(pattern)))
     {
-        GetGeoNames(results, maxResults, fuzzy);
+        GeoNamesQuery(results, maxResults, pattern);
         index = results.empty() ? -1 : 0;
     }
     if (!results.empty())

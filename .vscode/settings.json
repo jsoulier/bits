@@ -1,3 +1,6 @@
 {
+    "cmake.configureArgs": [
+        "-DGEONAMES_CLI=ON"
+    ],
     "cmake.parallelJobs": 8,
 }
